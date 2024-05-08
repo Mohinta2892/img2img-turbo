@@ -1,9 +1,9 @@
 (c) Samia Mohinta, Cambridge University, UK
 
-We tried `img2img-turbo` on Electron Microscopy (EM) datasets for image translation.
+We extended the application of `img2img-turbo` on Electron Microscopy (EM) datasets for image translation.
 Here, we note and reveal the settings used to train models on EM data.
 
-**Please also note that this is under development at the moment.**
+**Please also note that this is under development at the moment. Stay tuned for results!**
 
 # Data Download
   - TODO
