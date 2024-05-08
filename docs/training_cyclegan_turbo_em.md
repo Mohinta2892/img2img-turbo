@@ -74,3 +74,11 @@ Please cite this fork if using Electron Microscopy-related applications of img2i
 Mohinta Samia, Img2Img-Turbo-EM-DEV, (May, 2024), GitHub repository,
 https://github.com/Mohinta2892/img2img-turbo/tree/em-dev
 ```
+
+Please **DO NOT** forget to acknowledge the authors of Img2Img-turbo:
+
+```
+One-Step Image Translation with Text-to-Image Models
+Gaurav Parmar, Taesung Park, Srinivasa Narasimhan, Jun-Yan Zhu
+CMU and Adobe, arXiv 2403.12036
+```
