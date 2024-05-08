@@ -1,5 +1,41 @@
+(c) Samia Mohinta, Cambridge University, UK
+
+We tried `img2img-turbo` on Electron Microscopy (EM) datasets for image translation.
+Here, we note and reveal the settings used to train models on EM data.
+
+**Please also note that this is under development at the moment.**
+
 # Data Download
   - TODO
+
+# Data organisation
+Follow the same data organisation as specified by the authors:
+
+```
+data
+├── dataset_name
+│   ├── train_A
+│   │   ├── 000000.png
+│   │   ├── 000001.png
+│   │   └── ...
+│   ├── train_B
+│   │   ├── 000000.png
+│   │   ├── 000001.png
+│   │   └── ...
+│   └── fixed_prompt_a.txt
+|   └── fixed_prompt_b.txt
+|
+|   ├── test_A
+│   │   ├── 000000.png
+│   │   ├── 000001.png
+│   │   └── ...
+│   ├── test_B
+│   │   ├── 000000.png
+│   │   ├── 000001.png
+│   │   └── ...
+```
+
+*Note*: Please provide prompts specific to your **source** `fixed_prompt_a.txt` and **target** `fixed_prompt_b.txt` Electron Microscopy volumes.
 
 # Train
 
@@ -30,4 +66,11 @@ python src/inference_unpaired.py --model_path "output/cyclegan_turbo/em_hemi_oct
     --input_image "data/em_hemi_octo/test_B/img_461.png" \
     --prompt "electron microscopy image from larval brain of a fly” --direction "b2a” \
     --output_dir "outputs" --image_prep "no_resize"
+```
+# CITATION
 
+Please cite this fork if using Electron Microscopy-related applications of img2img-turbo.
+```
+Mohinta Samia, Img2Img-Turbo-EM-DEV, (May, 2024), GitHub repository,
+https://github.com/Mohinta2892/img2img-turbo/tree/em-dev
+```
