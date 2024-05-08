@@ -106,6 +106,7 @@ We tightly integrate three separate modules in the original latent diffusion mod
   pip install -r requirements.txt
   ```
   **Sanity check and configure accelerate**
+  
     To write a barebones configuration that doesn’t include options such as DeepSpeed configuration or running on TPUs, you can quickly run:
 
     ```python -c "from accelerate.utils import write_basic_config; write_basic_config(mixed_precision='fp16')"```
