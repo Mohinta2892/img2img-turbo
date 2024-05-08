@@ -71,7 +71,7 @@ python src/inference_unpaired.py --model_path "output/cyclegan_turbo/em_hemi_oct
 ```
 # CITATION
 
-Please cite this fork if using Electron Microscopy-related applications of img2img-turbo.
+Please cite this branched fork if using Electron Microscopy-related applications of img2img-turbo.
 ```
 Mohinta Samia, Img2Img-Turbo-EM-DEV, (May, 2024), GitHub repository,
 https://github.com/Mohinta2892/img2img-turbo/tree/em-dev
