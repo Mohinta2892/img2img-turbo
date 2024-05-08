@@ -105,6 +105,14 @@ We tightly integrate three separate modules in the original latent diffusion mod
   source venv/bin/activate
   pip install -r requirements.txt
   ```
+  **Sanity check and configure accelerate**
+    To write a barebones configuration that doesn’t include options such as DeepSpeed configuration or running on TPUs, you can quickly run:
+
+    ```python -c "from accelerate.utils import write_basic_config; write_basic_config(mixed_precision='fp16')"```
+  
+    To check that your configuration looks fine, run:
+    ```accelerate env```
+  
 **Paired Image Translation (pix2pix-turbo)**
 - The following command takes an image file and a prompt as inputs, extracts the canny edges, and saves the results in the directory specified.
     ```bash
