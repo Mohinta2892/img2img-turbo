@@ -90,6 +90,10 @@ We tightly integrate three separate modules in the original latent diffusion mod
 
 
 ## Getting Started
+
+**System Requirements**
+ - Cyclegan-turbo has been tested on a 24GB RTX 4090 with batch size 1 and image size 200 x 200. *Perhaps this is minimal requirement.* (Credits: Samia)
+
 **Environment Setup**
 - We provide a [conda env file](environment.yml) that contains all the required dependencies.
     ```
