@@ -39,6 +39,20 @@ data
 
 # Train
 
+- Initialize the accelerate environment and a basic config with the following command:
+
+```bash
+python -c "from accelerate.utils import write_basic_config; write_basic_config(mixed_precision='fp16')"
+```
+ You can edit the saved config file after it gets saved. Tutorials [here](https://huggingface.co/docs/accelerate/basic_tutorials/install).
+
+- Visualise the saved configuration with:
+
+ ```bash
+accelerate env
+```
+
+- Train the model with:
 ```bash
 export NCCL_P2P_DISABLE=1 
 
