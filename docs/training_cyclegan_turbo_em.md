@@ -39,7 +39,9 @@ data
 
 # Train
 
-```
+```bash
+export NCCL_P2P_DISABLE=1 
+
 accelerate launch --main_process_port 29501 src/train_cyclegan_turbo.py \
   --pretrained_model_name_or_path="stabilityai/sd-turbo"  \
   --output_dir="output/cyclegan_turbo/em_hemi_octo"  --dataset_folder "data/em_source_target" \
@@ -52,7 +54,7 @@ accelerate launch --main_process_port 29501 src/train_cyclegan_turbo.py \
 # Inference
 
 **a2b**:
-```
+```bash
 python src/inference_unpaired.py --model_path "output/cyclegan_turbo/em_hemi_octo/checkpoints/model_25001.pkl" \
     --input_image "data/em_hemi_octo/test_A/img_596.png" \
     --prompt "electron microscopy image from the hemibrain of the female adult fruit fly" --direction "a2b" \
@@ -61,7 +63,7 @@ python src/inference_unpaired.py --model_path "output/cyclegan_turbo/em_hemi_oct
 ```
 
 **b2a**:
-```
+```bash
 python src/inference_unpaired.py --model_path "output/cyclegan_turbo/em_hemi_octo/checkpoints/model_25001.pkl" \
     --input_image "data/em_hemi_octo/test_B/img_461.png" \
     --prompt "electron microscopy image from larval brain of a fly” --direction "b2a” \
