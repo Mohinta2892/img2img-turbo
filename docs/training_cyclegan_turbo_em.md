@@ -1,6 +1,6 @@
 (c) Samia Mohinta, Cambridge University, UK
 
-We extended the application of `img2img-turbo` on Electron Microscopy (EM) datasets for image translation.
+We extend and test the application of `img2img-turbo` on Electron Microscopy (EM) datasets for image translation.
 Here, we note and reveal the settings used to train models on EM data.
 
 **Please also note that this is under development at the moment. Stay tuned for results!**
@@ -65,6 +65,8 @@ accelerate launch --main_process_port 29501 src/train_cyclegan_turbo.py \
   --enable_xformers_memory_efficient_attention \
   --validation_steps 5000 --lambda_gan 0.5 --lambda_idt 1 --lambda_cycle 1
 ```
+**Note**: To train with mixed_precision pass `--mixed_precision fp16`
+
 # Inference
 
 **a2b**:
