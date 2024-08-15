@@ -244,28 +244,29 @@ if __name__ == '__main__':
     # TODO - make it argparse
 
     # You can provide a path to multiple zarrs
-    z_path = '/media/samia/DATA/PhD/codebases/autoproof/LightGlue/assets/octo'
-    out_f = '/media/samia/DATA/PhD/codebases/autoproof/LightGlue/assets/octo/2D'
+    z_path = '/media/samia/DATA/mounts/cephfs/img2img-turbo/data/3d_zarrs'
+    out_f = '/media/samia/DATA/mounts/cephfs/img2img-turbo/data/2d_pngs'
+    split_hdf_bool = False # set this to true if you have h5 files in the same path
     l_z_paths = sorted(glob(f"{z_path}/*.zarr"))
     l_h_paths = sorted(glob(f"{z_path}/*.h5"))
 
     assert len(l_z_paths) > 0, "No zarr files found in this path!"
-    assert len(l_h_paths) > 0, "No h5 files found in this path!"
+    assert not split_hdf_bool or len(l_h_paths) > 0, "No h5 files found in this path!"
 
     for z in l_z_paths:
         f = read_zarr(z)
         split_zarr(f, out_f=os.path.join(out_f, os.path.basename(z).split('.')[0]), crop_size=(120, 256, 256),
                    # (z,y,x)
-                   file_ext='.jpg')
+                   file_ext='.png')
 
     # TODO - activate this when user hits a button perhaps
-    split_hdf_bool = True
+
     if split_hdf_bool:
         for h in l_h_paths:
             f = read_hdf(h)
             split_hdf(f, out_f=os.path.join(out_f, os.path.basename(h).split('.')[0]), crop_size=(120, 256, 256),
                       # (z,y,x)
-                      file_ext='.jpg')
+                      file_ext='.png')
 
     # sanity checking
     # sanity_check(
