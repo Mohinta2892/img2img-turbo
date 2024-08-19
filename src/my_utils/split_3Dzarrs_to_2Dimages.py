@@ -31,6 +31,8 @@ import tifffile
 import matplotlib.pyplot as plt
 import numpy as np
 from tqdm import tqdm
+from scipy import ndimage
+from copy import deepcopy
 
 
 def cropND(img, bounding):
@@ -155,7 +157,68 @@ def split_hdf(f, out_f, crop_size=(256, 256), file_ext='.tif'):
             tifffile.imwrite(os.path.join(out_ff, f"img_{z_slice}{file_ext}"), rf_cropped[z_slice, ...])
 
 
-def split_zarr(f, out_f, crop_size=(256, 256), file_ext='.tif'):
+def binarize_boundaries(rf_arr, background=0):
+    print("All labels are converted to binary maps where 1 = Foreground, 0 = Background")
+
+    def __grow(gt, gt_mask=None, background_val=0, steps=1, binarise=True, only_xy=False):
+        if gt_mask is not None:
+            assert (
+                    gt.shape == gt_mask.shape
+            ), "GT_LABELS and GT_MASK do not have the same size."
+
+        if only_xy:
+            assert len(gt.shape) == 3
+            for z in range(gt.shape[0]):
+                __grow(gt[z], None if gt_mask is None else gt_mask[z])
+            return
+
+        # get all foreground voxels by erosion of each component
+        foreground = np.zeros(shape=gt.shape, dtype=bool)
+        masked = None
+        if gt_mask is not None:
+            masked = np.equal(gt_mask, 0)
+        for label in np.unique(gt):
+            if label == background_val:
+                continue
+            label_mask = gt == label
+            # Assume that masked out values are the same as the label we are
+            # eroding in this iteration. This ensures that at the boundary to
+            # a masked region the value blob is not shrinking.
+            if masked is not None:
+                label_mask = np.logical_or(label_mask, masked)
+            eroded_label_mask = ndimage.binary_erosion(
+                label_mask, iterations=steps, border_value=1
+            )
+            foreground = np.logical_or(eroded_label_mask, foreground)
+
+        # label new background
+        background = np.logical_not(foreground)
+        gt[background] = background_val
+        if binarise:
+            gt_bin = deepcopy(gt)
+            gt_bin[gt_bin > background_val] = 1  # membranes are denoted by background val
+            return gt, gt_bin
+        return gt, None
+
+    rf_arr, rf_arr_bin = __grow(rf_arr, background_val=background)
+    rf_arr_bin = (rf_arr_bin * 255).astype(np.uint8)
+    return rf_arr_bin
+
+
+def expand_dims_rgb(arr):
+    # Expand dimensions and then tile to create 3 channels
+
+    print("Adding 3 channels at the end of each image arr!")
+    # Expand dimensions to create a new axis for channels
+    expanded_array = np.expand_dims(arr, axis=-1)  # Shape: (120, 256, 256, 1)
+
+    # Tile along the new axis to create 3 channels
+    arr = np.tile(expanded_array, (1, 1, 1, 3))  # Shape: (120, 256, 256, 3)
+
+    return arr
+
+
+def split_zarr(f, out_f, crop_size=(256, 256), file_ext='.tif', binarize=False, save_rgb=True):
     """
    Splits a high-dimensional Zarr dataset into 2D image slices and saves them in individual folders.
 
@@ -168,6 +231,8 @@ def split_zarr(f, out_f, crop_size=(256, 256), file_ext='.tif'):
        out_f (str): The output directory where the 2D image slices will be saved.
        crop_size (tuple, optional): The size of the 2D slices to be extracted. Default is (256, 256).
        file_ext (str, optional): The file extension of the saved images. Default is '.tif'.
+       binarize (bool, optional): Should the labels be converted to binary maps. Default is True.
+       binarize (bool, optional): Should you save the images as rgb images with 3 channels. Default is True.
 
    Returns:
        None
@@ -206,9 +271,16 @@ def split_zarr(f, out_f, crop_size=(256, 256), file_ext='.tif'):
         # hemi - matrix shape 776^3 the labels start from 128 and go till 648, so there are 520 slices
         rf_cropped = cropND(rf, bounding=crop_size)  # bounding=(120,) + crop_size
 
+        # binarise the labels or save them as is
+        if binarize and 'raw' not in k:  # Todo add control in main as an argparse arg
+            rf_cropped = binarize_boundaries(rf_cropped, background=0)
+
+        # make it ZxYxXxChannels
+        if save_rgb:
+            rf_cropped = expand_dims_rgb(rf_cropped)
         # save each z_slice now as a 2D image
         for z_slice in tqdm(range(rf_cropped.shape[0]), desc=k):
-            tifffile.imwrite(os.path.join(out_ff, f"img_{z_slice}{file_ext}"), rf_cropped[z_slice, ...])
+            tifffile.imwrite(os.path.join(out_ff, f"img_{str(z_slice).zfill(5)}{file_ext}"), rf_cropped[z_slice, ...])
 
 
 def sanity_check(path_2d_raw, path_2d_labels):
@@ -246,7 +318,7 @@ if __name__ == '__main__':
     # You can provide a path to multiple zarrs
     z_path = '/media/samia/DATA/mounts/cephfs/img2img-turbo/data/3d_zarrs'
     out_f = '/media/samia/DATA/mounts/cephfs/img2img-turbo/data/2d_pngs'
-    split_hdf_bool = False # set this to true if you have h5 files in the same path
+    split_hdf_bool = False  # set this to true if you have h5 files in the same path
     l_z_paths = sorted(glob(f"{z_path}/*.zarr"))
     l_h_paths = sorted(glob(f"{z_path}/*.h5"))
 
@@ -257,7 +329,7 @@ if __name__ == '__main__':
         f = read_zarr(z)
         split_zarr(f, out_f=os.path.join(out_f, os.path.basename(z).split('.')[0]), crop_size=(120, 256, 256),
                    # (z,y,x)
-                   file_ext='.png')
+                   file_ext='.png', binarize=True, save_rgb=True)
 
     # TODO - activate this when user hits a button perhaps
 
